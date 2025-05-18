@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PersonalTasks</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
+    <string name="detalhes">Detalhes</string>
+    <string name="t_tulo">Título</string>
+    <string name="descri_o">Descrição</string>
+    <string name="selecionar_data">Selecionar data</string>
+    <string name="data_limite">Data limite: —/—/----</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvar">Salvar</string>
 </resources>

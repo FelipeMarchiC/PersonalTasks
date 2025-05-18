@@ -8,14 +8,22 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
+    <include
+        android:id="@+id/toolbar_in"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_in"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
