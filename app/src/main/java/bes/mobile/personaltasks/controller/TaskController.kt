@@ -1,7 +1,7 @@
 package bes.mobile.personaltasks.controller
 
 import androidx.room.Room
-import bes.mobile.personaltasks.MainActivity
+import bes.mobile.personaltasks.view.MainActivity
 import bes.mobile.personaltasks.model.Task
 import bes.mobile.personaltasks.model.TaskDao
 import bes.mobile.personaltasks.model.TaskRoomDb
