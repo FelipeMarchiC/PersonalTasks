@@ -14,8 +14,8 @@ class TaskController(mainActivity: MainActivity) {
     ).build().taskDao()
 
     fun createTask(task: Task) = taskDao.createTask(task)
-    fun getContact(id: Int) = taskDao.retrieveTask(id)
-    fun getContacts() = taskDao.retrieveTasks()
+    fun getTask(id: Int) = taskDao.retrieveTask(id)
+    fun getTasks() = taskDao.retrieveTasks()
     fun updateTask(task: Task) = taskDao.updateTask(task)
-    fun deleteContact(task: Task) = taskDao.deleteTask(task)
+    fun deleteTask(task: Task) = taskDao.deleteTask(task)
 }
