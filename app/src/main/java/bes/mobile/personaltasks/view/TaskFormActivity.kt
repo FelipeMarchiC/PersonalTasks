@@ -36,7 +36,7 @@ class TaskFormActivity: AppCompatActivity() {
 
         // Configura toolbar com botão de voltar
         setSupportActionBar(atfb.toolbarIn.toolbar)
-        supportActionBar?.subtitle = "New Task"
+        supportActionBar?.subtitle = "Nova Tarefa"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Define comportamento do botão de voltar do sistema
@@ -67,7 +67,7 @@ class TaskFormActivity: AppCompatActivity() {
     // Preenche os campos da interface com os dados da tarefa recebida
     private fun prepareView(receivedTask: Task) {
         receivedTask.let {
-            supportActionBar?.subtitle = "Edit Task"
+            supportActionBar?.subtitle = "Editar Tarefa"
             with(atfb) {
                 editTitle.setText(it.title)
                 editDescription.setText(it.description)
@@ -77,7 +77,7 @@ class TaskFormActivity: AppCompatActivity() {
                 val viewContact = intent.getBooleanExtra(EXTRA_VIEW_TASK, false)
 
                 if (viewContact) {
-                    supportActionBar?.subtitle = "View Task"
+                    supportActionBar?.subtitle = "Ver Tarefa"
                     // Desabilita campos e esconde botões
                     editTitle.isEnabled = false
                     editDescription.isEnabled = false

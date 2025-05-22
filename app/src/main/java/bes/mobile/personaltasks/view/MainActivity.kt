@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         val task = taskList[position]
         taskList.removeAt(position)
         taskAdapter.notifyItemRemoved(position)
-        Toast.makeText(this, "Task removed!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Tarefa removida!", Toast.LENGTH_SHORT).show()
         Thread { mainController.deleteTask(task) }.start()
     }
 }
