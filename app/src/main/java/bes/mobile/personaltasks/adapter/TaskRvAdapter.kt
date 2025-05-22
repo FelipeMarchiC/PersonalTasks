@@ -14,21 +14,25 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Adaptador para RecyclerView exibindo uma lista de tarefas com suporte a clique e menu de contexto
 class TaskRvAdapter(
     private val taskList: MutableList<Task>,
     private val onTaskClickListener: OnTaskClickListener,
     private val onTaskLongClickListener: OnTaskLongClickListener,
-): RecyclerView.Adapter<TaskRvAdapter.TaskViewHolder>()  {
+): RecyclerView.Adapter<TaskRvAdapter.TaskViewHolder>() {
+
+    // Formatador de data para datas no formato "dia/mes/ano"
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
+    // ViewHolder interno contendo as views de um item da lista
     inner class TaskViewHolder(tcb: TaskCardBinding): RecyclerView.ViewHolder(tcb.root){
         val titleTv: TextView = tcb.taskTitle
         val descriptionTv: TextView = tcb.taskDescription
         val dueDateTv: TextView = tcb.taskDueDate
 
         init {
-
-            tcb.root.setOnCreateContextMenuListener{ menu, _, _ ->
+            // Define menu de contexto com ações (detalhar, editar, remover)
+            tcb.root.setOnCreateContextMenuListener { menu, _, _ ->
                 (onTaskLongClickListener as AppCompatActivity).menuInflater.inflate(R.menu.context_menu_main, menu)
 
                 menu.findItem(R.id.menu_details).setOnMenuItemClickListener {
@@ -47,25 +51,26 @@ class TaskRvAdapter(
                 }
             }
 
-            tcb.root.setOnClickListener { onTaskClickListener.onTaskClick(adapterPosition) }
+            // Define clique simples no item
+            tcb.root.setOnClickListener {
+                onTaskClickListener.onTaskClick(adapterPosition)
+            }
         }
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): TaskViewHolder = TaskViewHolder(
-        TaskCardBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
+    // Cria o ViewHolder a partir do layout
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+        return TaskViewHolder(
+            TaskCardBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         )
-    )
+    }
 
-    override fun onBindViewHolder(
-        holder: TaskViewHolder,
-        position: Int
-    ) {
+    // Preenche os dados da tarefa nas views do ViewHolder
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         taskList[position].let { task ->
             with(holder) {
                 titleTv.text = task.title
@@ -75,8 +80,10 @@ class TaskRvAdapter(
         }
     }
 
+    // Retorna o número de itens na lista
     override fun getItemCount(): Int = taskList.size
 
+    // Formata a data da tarefa
     private fun formatDate(date: Date?): String {
         return date?.let { dateFormatter.format(it) } ?: ""
     }
