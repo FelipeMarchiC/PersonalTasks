@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import bes.mobile.personaltasks.databinding.ActivityTaskFormBinding
@@ -103,6 +104,13 @@ class TaskFormActivity: AppCompatActivity() {
             }
 
             buttonSave.setOnClickListener {
+
+                // Verifica se os campos foram preenchidos
+                if (editTitle.text.isBlank() || editDescription.text.isBlank() || textSelectedDate.text.isBlank()) {
+                    Toast.makeText(this@TaskFormActivity, "Preenche Todos os Campos", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener // Impede a continuação
+                }
+
                 // Cria nova Task com os dados preenchidos
                 Task(
                     receivedTask?.id ?: hashCode(), // Se nova, gera ID com hashCode
