@@ -12,5 +12,6 @@ data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var title: String = "",
     var description: String = "",
-    var dueDate: Date
+    var dueDate: Date,
+    var done: Boolean
 ): Parcelable

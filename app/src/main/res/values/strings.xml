@@ -9,4 +9,5 @@
     <string name="data_limite">Data limite: —/—/----</string>
     <string name="cancelar">Cancelar</string>
     <string name="salvar">Salvar</string>
+    <string name="terminada">Terminada?</string>
 </resources>

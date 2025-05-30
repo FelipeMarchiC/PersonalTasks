@@ -32,6 +32,13 @@
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/task_isDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

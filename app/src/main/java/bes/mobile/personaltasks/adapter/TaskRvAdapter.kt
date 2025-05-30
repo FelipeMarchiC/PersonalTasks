@@ -29,6 +29,7 @@ class TaskRvAdapter(
         val titleTv: TextView = tcb.taskTitle
         val descriptionTv: TextView = tcb.taskDescription
         val dueDateTv: TextView = tcb.taskDueDate
+        val isDoneTv: TextView = tcb.taskIsDone
 
         init {
             // Define menu de contexto com ações (detalhar, editar, remover)
@@ -76,8 +77,17 @@ class TaskRvAdapter(
                 titleTv.text = task.title
                 descriptionTv.text = task.description
                 dueDateTv.text = formatDate(task.dueDate)
+                isDoneTv.text = setDoneText(task.done)
             }
         }
+    }
+
+    private fun setDoneText(isDone: Boolean): String {
+        if (isDone) {
+            return "Terminada"
+        }
+
+        return "Pendente"
     }
 
     // Retorna o número de itens na lista

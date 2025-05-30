@@ -49,8 +49,8 @@ class TaskFormActivity: AppCompatActivity() {
         // Recupera tarefa passada pela intent, se houver
         val task = getTaskFromIntent()
 
-        // Prepara a visualização, se estiver editando ou visualizando uma tarefa
-        if (task != null) prepareView(task)
+        // Prepara a visualização
+        prepareView(task)
 
         // Configura o comportamento dos botões
         prepareButtonBehaviour(task)
@@ -66,13 +66,22 @@ class TaskFormActivity: AppCompatActivity() {
     }
 
     // Preenche os campos da interface com os dados da tarefa recebida
-    private fun prepareView(receivedTask: Task) {
+    private fun prepareView(receivedTask: Task?) {
+        if (receivedTask == null) {
+            with(atfb) {
+                editState.visibility = View.GONE
+                editState.isEnabled = false
+            }
+            return
+        }
+
         receivedTask.let {
             supportActionBar?.subtitle = "Editar Tarefa"
             with(atfb) {
                 editTitle.setText(it.title)
                 editDescription.setText(it.description)
                 textSelectedDate.text = formatDate(it.dueDate)
+                editState.isChecked = it.done
 
                 // Verifica se a tarefa está sendo apenas visualizada
                 val viewContact = intent.getBooleanExtra(EXTRA_VIEW_TASK, false)
@@ -84,6 +93,7 @@ class TaskFormActivity: AppCompatActivity() {
                     editDescription.isEnabled = false
                     textSelectedDate.isEnabled = false
                     buttonPickDate.isEnabled = false
+                    editState.isEnabled = false
                     buttonSave.visibility = View.GONE
                     buttonCancel.visibility = View.GONE
                 }
@@ -116,7 +126,8 @@ class TaskFormActivity: AppCompatActivity() {
                     receivedTask?.id ?: hashCode(), // Se nova, gera ID com hashCode
                     editTitle.text.toString(),
                     editDescription.text.toString(),
-                    parseDate(textSelectedDate.text.toString()) ?: Date()
+                    parseDate(textSelectedDate.text.toString()) ?: Date(),
+                    editState.isChecked
                 ).let { task ->
                     // Retorna a task como resultado para a Activity anterior
                     Intent().apply {
