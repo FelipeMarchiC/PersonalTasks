@@ -20,7 +20,7 @@ import bes.mobile.personaltasks.model.Constant.EXTRA_VIEW_TASK
 import bes.mobile.personaltasks.model.Task
 
 class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickListener {
-
+    // Comment for test commit
     // Binding da interface usando ViewBinding
     private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
