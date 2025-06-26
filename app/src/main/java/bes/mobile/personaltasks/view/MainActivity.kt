@@ -19,7 +19,6 @@ import bes.mobile.personaltasks.adapter.TaskRvAdapter
 import bes.mobile.personaltasks.controller.TaskController
 import bes.mobile.personaltasks.databinding.ActivityMainBinding
 import bes.mobile.personaltasks.model.Constant.EXTRA_TASK
-import bes.mobile.personaltasks.model.Constant.EXTRA_TASK_ARRAY
 import bes.mobile.personaltasks.model.Constant.EXTRA_VIEW_TASK
 import bes.mobile.personaltasks.model.Task
 
@@ -53,34 +52,26 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
     }
 
     // Extensão da classe Handler
-    private val getTasksHandler = object: Handler(Looper.getMainLooper()) {
+    private val getTasksHandler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
-            Thread {
-                super.handleMessage(msg)
-
-                if (msg.what == GET_TASKS_MESSAGE) {
-                    mainController.getTasks()
-
-                    // Reenvia mensagem para manter atualizações constantes
-                    sendMessageDelayed(
-                        obtainMessage().apply { what = GET_TASKS_MESSAGE },
-                        GET_TASKS_INTERVAL
-                    )
-                } else {
-                    val taskArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY, Task::class.java)
-                    } else {
-                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY)
-                    }
-
-                    // limpa as tarefas e as adiciona novamente
+            // Só executa a lógica se for a mensagem de atualização de tarefas
+            if (msg.what == HistoryActivity.GET_TASKS_MESSAGE) {
+                // Usa o método com callback para buscar tarefas async
+                mainController.getTasks { tasks ->
+                    // Atualiza a lista e o adapter na thread principal
                     runOnUiThread {
                         taskList.clear()
-                        taskArray?.forEach { taskList.add(it as Task) }
+                        taskList.addAll(tasks)
                         taskAdapter.notifyDataSetChanged()
                     }
                 }
-            }.start()
+
+                // Reenvia mensagem para manter atualizações constantes
+                sendMessageDelayed(
+                    obtainMessage().apply { what = HistoryActivity.GET_TASKS_MESSAGE },
+                    HistoryActivity.GET_TASKS_INTERVAL
+                )
+            }
         }
     }
 
@@ -102,10 +93,10 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         amb.taskRv.layoutManager = LinearLayoutManager(this)
 
         // Envia primeira mensagem para atualizar as tarefas
-        getTasksHandler.sendMessageDelayed(
+        getTasksHandler.sendMessage(
             Message().apply {
                 what = GET_TASKS_MESSAGE
-            }, GET_TASKS_INTERVAL
+            }
         )
     }
 
