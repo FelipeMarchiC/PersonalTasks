@@ -7,6 +7,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.Date
 
 class TaskFirebaseDb : TaskDao {
     private val dbReference = Firebase.database.getReference("taskList")
@@ -80,9 +81,9 @@ class TaskFirebaseDb : TaskDao {
         return taskList[taskList.indexOfFirst { it.id == id }]
     }
 
-    // Retorna todas as tarfas
+    // Retorna todas as tarefas, exceto deletadas
     override fun retrieveTasks(): MutableList<Task> {
-        return taskList
+        return taskList.filter { it.deletedAt == null }.toMutableList()
     }
 
     // Atualiza uma tarefa no banco
@@ -91,9 +92,10 @@ class TaskFirebaseDb : TaskDao {
         return 1
     }
 
-    // Remove uma tarefa do banco
+    // Marca uma tarefa como deletada (soft delete)
     override fun deleteTask(task: Task): Int {
-        dbReference.child(task.id.toString()).removeValue()
+        task.deletedAt = Date()
+        dbReference.child(task.id.toString()).setValue(task)
         return 1
     }
 }
