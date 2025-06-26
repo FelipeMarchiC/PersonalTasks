@@ -36,7 +36,8 @@ git clone https://github.com/FelipeMarchiC/PersonalTasks.git
 
 Veja uma execução completa (em 1 minuto) demonstrando os requisitos funcionais:
 
-📺 [Link para o vídeo demonstrativo](https://youtu.be/tliw9RQ4bWY)
+📺 [Link para o vídeo demonstrativo (Entrega 1)](https://youtu.be/tliw9RQ4bWY)
+📺 [Link para o vídeo demonstrativo (Entrega 2)](https://youtu.be/Dl2b1LnJzls)
 
 ## 📁 Estrutura Principal do Projeto
 ```
