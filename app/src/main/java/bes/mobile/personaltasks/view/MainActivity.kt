@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
     companion object {
         const val GET_TASKS_MESSAGE = 1
         const val GET_TASKS_INTERVAL = 2000L
-        const val RC_SIGN_IN = 999
     }
 
     // Extensão da classe Handler
