@@ -9,7 +9,6 @@ import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -51,26 +50,35 @@ class HistoryActivity : AppCompatActivity(), OnTaskClickListener, OnDeletedTaskL
         const val GET_TASKS_INTERVAL = 2000L
     }
 
-    val getTasksHandler = object: Handler(Looper.getMainLooper()) {
+    // Extensão da classe Handler
+    private val getTasksHandler = object: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            if (msg.what == GET_TASKS_MESSAGE) {
-                mainController.getDeletedTasks()
-                sendMessageDelayed(
-                    obtainMessage().apply { what = GET_TASKS_MESSAGE },
-                    GET_TASKS_INTERVAL
-                )
-            } else {
-                val taskArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    msg.data?.getParcelableArray(EXTRA_TASK_ARRAY, Task::class.java)
+            Thread {
+                super.handleMessage(msg)
+
+                if (msg.what == GET_TASKS_MESSAGE) {
+                    mainController.getDeletedTasks()
+
+                    // Reenvia mensagem para manter atualizações constantes
+                    sendMessageDelayed(
+                        obtainMessage().apply { what = GET_TASKS_MESSAGE },
+                        GET_TASKS_INTERVAL
+                    )
+                } else {
+                    val taskArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY, Task::class.java)
+                    } else {
+                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY)
+                    }
+
+                    // limpa as tarefas e as adiciona novamente
+                    runOnUiThread {
+                        taskList.clear()
+                        taskArray?.forEach { taskList.add(it as Task) }
+                        taskAdapter.notifyDataSetChanged()
+                    }
                 }
-                else {
-                    msg.data?.getParcelableArray(EXTRA_TASK_ARRAY)
-                }
-                taskList.clear()
-                taskArray?.forEach { taskList.add(it as Task) }
-                taskAdapter.notifyDataSetChanged()
-            }
+            }.start()
         }
     }
 

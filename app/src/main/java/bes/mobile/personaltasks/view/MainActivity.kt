@@ -3,6 +3,9 @@ package bes.mobile.personaltasks.view
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,6 +19,7 @@ import bes.mobile.personaltasks.adapter.TaskRvAdapter
 import bes.mobile.personaltasks.controller.TaskController
 import bes.mobile.personaltasks.databinding.ActivityMainBinding
 import bes.mobile.personaltasks.model.Constant.EXTRA_TASK
+import bes.mobile.personaltasks.model.Constant.EXTRA_TASK_ARRAY
 import bes.mobile.personaltasks.model.Constant.EXTRA_VIEW_TASK
 import bes.mobile.personaltasks.model.Task
 
@@ -42,6 +46,44 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         TaskController()
     }
 
+    // Variáveis de controle para atualização de lista de tarefas
+    companion object {
+        const val GET_TASKS_MESSAGE = 1
+        const val GET_TASKS_INTERVAL = 2000L
+    }
+
+    // Extensão da classe Handler
+    private val getTasksHandler = object: Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            Thread {
+                super.handleMessage(msg)
+
+                if (msg.what == GET_TASKS_MESSAGE) {
+                    mainController.getTasks()
+
+                    // Reenvia mensagem para manter atualizações constantes
+                    sendMessageDelayed(
+                        obtainMessage().apply { what = GET_TASKS_MESSAGE },
+                        GET_TASKS_INTERVAL
+                    )
+                } else {
+                    val taskArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY, Task::class.java)
+                    } else {
+                        msg.data?.getParcelableArray(EXTRA_TASK_ARRAY)
+                    }
+
+                    // limpa as tarefas e as adiciona novamente
+                    runOnUiThread {
+                        taskList.clear()
+                        taskArray?.forEach { taskList.add(it as Task) }
+                        taskAdapter.notifyDataSetChanged()
+                    }
+                }
+            }.start()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
@@ -59,8 +101,12 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         amb.taskRv.adapter = taskAdapter
         amb.taskRv.layoutManager = LinearLayoutManager(this)
 
-        // Preenche a lista de tarefas
-        fillTaskList()
+        // Envia primeira mensagem para atualizar as tarefas
+        getTasksHandler.sendMessageDelayed(
+            Message().apply {
+                what = GET_TASKS_MESSAGE
+            }, GET_TASKS_INTERVAL
+        )
     }
 
     // Recupera a Task do Intent, com suporte a diferentes versões do Android
@@ -86,19 +132,6 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
             taskAdapter.notifyItemChanged(position)
             Thread { mainController.updateTask(receivedTask) }.start()
         }
-    }
-
-    // Carrega tarefas do banco e atualiza a UI
-    private fun fillTaskList() {
-        Thread {
-            val tasks = mainController.getTasks()
-
-            runOnUiThread {
-                taskList.clear()
-                taskList.addAll(tasks)
-                taskAdapter.notifyDataSetChanged()
-            }
-        }.start()
     }
 
     // Infla o menu da toolbar
