@@ -14,4 +14,10 @@
         android:title=""
         android:icon="@android:drawable/ic_menu_view"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/logout_mi"
+        android:title=""
+        android:icon="@drawable/ic_out"
+        app:showAsAction="always" />
 </menu>

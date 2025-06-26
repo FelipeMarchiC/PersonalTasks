@@ -21,6 +21,8 @@ import bes.mobile.personaltasks.databinding.ActivityMainBinding
 import bes.mobile.personaltasks.model.Constant.EXTRA_TASK
 import bes.mobile.personaltasks.model.Constant.EXTRA_VIEW_TASK
 import bes.mobile.personaltasks.model.Task
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickListener {
     // Comment for test commit
@@ -37,8 +39,11 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         TaskRvAdapter(taskList, this, this)
     }
 
+    // Launcher para receber resultado da activity de login
+    private lateinit var loginLauncher: ActivityResultLauncher<Intent>
+
     // Launcher para receber resultado da Activity de formulário
-    private lateinit var cArl: ActivityResultLauncher<Intent>
+    private lateinit var taskFormLauncher: ActivityResultLauncher<Intent>
 
     // Controller responsável pelas operações com dados
     private val mainController: TaskController by lazy {
@@ -49,6 +54,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
     companion object {
         const val GET_TASKS_MESSAGE = 1
         const val GET_TASKS_INTERVAL = 2000L
+        const val RC_SIGN_IN = 999
     }
 
     // Extensão da classe Handler
@@ -68,8 +74,8 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
 
                 // Reenvia mensagem para manter atualizações constantes
                 sendMessageDelayed(
-                    obtainMessage().apply { what = HistoryActivity.GET_TASKS_MESSAGE },
-                    HistoryActivity.GET_TASKS_INTERVAL
+                    obtainMessage().apply { what = GET_TASKS_MESSAGE },
+                    GET_TASKS_INTERVAL
                 )
             }
         }
@@ -77,27 +83,56 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(amb.root)
-        setSupportActionBar(amb.toolbarIn.toolbar)
 
-        // Registra launcher para tratar retorno da TaskFormActivity
-        cArl = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // Inicializa o launcher para login
+        loginLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                setupMainActivity()
+            } else {
+                Toast.makeText(this, "Login cancelado ou falhou", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+
+        // Inicializa o launcher para formulario
+        taskFormLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val task = getTaskFrom(result)
                 task?.let(::handleReceivedTask)
             }
         }
 
-        // Configura RecyclerView
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            launchLogin()
+        } else {
+            setupMainActivity()
+        }
+    }
+
+    private fun launchLogin() {
+        val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
+
+        val loginIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .setLogo(R.drawable.ic_launcher_foreground)
+            .setTheme(R.style.Theme_PersonalTasks)
+            .build()
+
+        loginLauncher.launch(loginIntent)
+    }
+
+    private fun setupMainActivity() {
+        setContentView(amb.root)
+        setSupportActionBar(amb.toolbarIn.toolbar)
+
         amb.taskRv.adapter = taskAdapter
         amb.taskRv.layoutManager = LinearLayoutManager(this)
 
-        // Envia primeira mensagem para atualizar as tarefas
-        getTasksHandler.sendMessage(
-            Message().apply {
-                what = GET_TASKS_MESSAGE
-            }
-        )
+        getTasksHandler.sendMessage(Message().apply { what = GET_TASKS_MESSAGE })
+
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email
+        Toast.makeText(this, "Bem-vindo, $userEmail", Toast.LENGTH_SHORT).show()
     }
 
     // Recupera a Task do Intent, com suporte a diferentes versões do Android
@@ -135,15 +170,29 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.add_task_mi -> {
-                cArl.launch(Intent(this, TaskFormActivity::class.java))
+                taskFormLauncher.launch(Intent(this, TaskFormActivity::class.java))
                 true
             }
             R.id.task_history_mi -> {
-                cArl.launch(Intent(this, HistoryActivity::class.java))
+                taskFormLauncher.launch(Intent(this, HistoryActivity::class.java))
+                true
+            }
+            R.id.logout_mi -> {
+                logout()
                 true
             }
             else -> false
         }
+    }
+
+    private fun logout() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                Toast.makeText(this, "Deslogado com Sucesso", Toast.LENGTH_SHORT).show()
+                finish()
+                startActivity(Intent(this, MainActivity::class.java))
+            }
     }
 
     // Cria intent para abrir formulário, com opções de edição ou visualização
@@ -161,12 +210,12 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
 
     // Abre detalhes da tarefa pelo menu de contexto
     override fun onDetailsTaskMenuItemClick(position: Int) {
-        cArl.launch(createTaskFormIntent(taskList[position], viewOnly = true))
+        taskFormLauncher.launch(createTaskFormIntent(taskList[position], viewOnly = true))
     }
 
     // Abre formulário para edição da tarefa
     override fun onEditTaskMenuItemClick(position: Int) {
-        cArl.launch(createTaskFormIntent(taskList[position]))
+        taskFormLauncher.launch(createTaskFormIntent(taskList[position]))
     }
 
     // Remove tarefa da lista e do banco de dados
