@@ -86,6 +86,11 @@ class TaskFirebaseDb : TaskDao {
         return taskList.filter { it.deletedAt == null }.toMutableList()
     }
 
+    // Retorna todas as tarefas deletadas
+    override fun retrieveDeletedTasks(): List<Task> {
+        return taskList.filter { it.deletedAt != null }
+    }
+
     // Atualiza uma tarefa no banco
     override fun updateTask(task: Task): Int {
         dbReference.child(task.id.toString()).setValue(task)

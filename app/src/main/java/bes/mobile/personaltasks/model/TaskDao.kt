@@ -17,8 +17,11 @@ interface TaskDao {
     @Update
     fun updateTask(task: Task): Int
 
-    @Query("SELECT * FROM Task")
+    @Query("SELECT * FROM Task WHERE deletedAt IS NULL")
     fun retrieveTasks(): MutableList<Task>
+
+    @Query("SELECT * FROM Task WHERE deletedAt IS NOT NULL")
+    fun retrieveDeletedTasks(): List<Task>
 
     @Query("SELECT * FROM Task WHERE id = :id")
     fun retrieveTask(id: Int): Task
