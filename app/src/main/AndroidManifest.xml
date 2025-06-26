@@ -16,6 +16,9 @@
             android:name=".view.TaskFormActivity"
             android:exported="false" />
         <activity
+            android:name=".view.HistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>

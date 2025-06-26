@@ -147,6 +147,10 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
                 cArl.launch(Intent(this, TaskFormActivity::class.java))
                 true
             }
+            R.id.task_history_mi -> {
+                cArl.launch(Intent(this, HistoryActivity::class.java))
+                true
+            }
             else -> false
         }
     }
