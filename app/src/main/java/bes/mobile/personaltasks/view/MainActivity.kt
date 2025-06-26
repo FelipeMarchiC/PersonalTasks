@@ -109,6 +109,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         }
     }
 
+    // lançar intent de login
     private fun launchLogin() {
         val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
 
@@ -122,6 +123,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         loginLauncher.launch(loginIntent)
     }
 
+    // configurar tela principal da main activity
     private fun setupMainActivity() {
         setContentView(amb.root)
         setSupportActionBar(amb.toolbarIn.toolbar)
@@ -185,6 +187,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
         }
     }
 
+    // função para logout
     private fun logout() {
         AuthUI.getInstance()
             .signOut(this)

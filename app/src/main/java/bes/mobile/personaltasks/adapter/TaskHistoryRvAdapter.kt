@@ -73,6 +73,8 @@ class TaskHistoryRvAdapter(
                 descriptionTv.text = task.description
                 dueDateTv.text = formatDate(task.dueDate)
                 isDoneTv.text = setDoneText(task.done)
+
+                itemView.setBackgroundColor(itemView.context.getColor(R.color.gray))
             }
         }
     }
