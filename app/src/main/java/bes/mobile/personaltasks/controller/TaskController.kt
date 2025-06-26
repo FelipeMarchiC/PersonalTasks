@@ -7,7 +7,7 @@ import bes.mobile.personaltasks.model.TaskDao
 import bes.mobile.personaltasks.model.TaskFirebaseDb
 import bes.mobile.personaltasks.model.TaskRoomDb
 
-class TaskController(mainActivity: MainActivity) {
+class TaskController() {
     /* private val taskDao: TaskDao = Room.databaseBuilder(
         mainActivity,
         TaskRoomDb::class.java,

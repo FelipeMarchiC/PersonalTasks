@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnTaskLongClickLi
 
     // Controller responsável pelas operações com dados
     private val mainController: TaskController by lazy {
-        TaskController(this)
+        TaskController()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
