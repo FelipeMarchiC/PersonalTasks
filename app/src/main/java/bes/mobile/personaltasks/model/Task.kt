@@ -12,7 +12,7 @@ data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var title: String = "",
     var description: String = "",
-    var dueDate: Date,
-    var done: Boolean,
+    var dueDate: Date = Date(),
+    var done: Boolean = false,
     var deletedAt: Date? = null
 ): Parcelable
