@@ -54,12 +54,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />
 
+        <Spinner
+        android:id="@+id/priorityPick"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:text="@string/prioridade"
+        app:layout_constraintTop_toBottomOf="@id/editState"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp" />
+
     <Button
         android:id="@+id/buttonPickDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/selecionar_data"
-        app:layout_constraintTop_toBottomOf="@id/editState"
+        app:layout_constraintTop_toBottomOf="@id/priorityPick"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />

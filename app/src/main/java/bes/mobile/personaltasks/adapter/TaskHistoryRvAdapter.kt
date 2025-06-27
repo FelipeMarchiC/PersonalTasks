@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import bes.mobile.personaltasks.R
 import bes.mobile.personaltasks.databinding.TaskCardBinding
 import bes.mobile.personaltasks.model.Task
+import bes.mobile.personaltasks.model.TaskPriority
 import bes.mobile.personaltasks.view.OnDeletedTaskLongClickListener
 import bes.mobile.personaltasks.view.OnTaskClickListener
 import java.text.SimpleDateFormat
@@ -29,6 +30,7 @@ class TaskHistoryRvAdapter(
         val titleTv: TextView = tcb.taskTitle
         val descriptionTv: TextView = tcb.taskDescription
         val dueDateTv: TextView = tcb.taskDueDate
+        val taskPriorityTv: TextView = tcb.taskPriority
         val isDoneTv: TextView = tcb.taskIsDone
 
         init {
@@ -72,11 +74,24 @@ class TaskHistoryRvAdapter(
                 titleTv.text = task.title
                 descriptionTv.text = task.description
                 dueDateTv.text = formatDate(task.dueDate)
+                taskPriorityTv.text = setPriorityText(task.priority)
                 isDoneTv.text = setDoneText(task.done)
 
                 itemView.setBackgroundColor(itemView.context.getColor(R.color.gray))
             }
         }
+    }
+
+    private fun setPriorityText(priority: TaskPriority): String {
+        if (priority == TaskPriority.HIGH) {
+            return "Alta Prioridade"
+        }
+
+        if (priority == TaskPriority.LOW) {
+            return  "Baixa Prioridade"
+        }
+
+        return "Média Prioridade"
     }
 
     private fun setDoneText(isDone: Boolean): String {

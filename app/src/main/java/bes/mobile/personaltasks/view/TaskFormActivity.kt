@@ -13,6 +13,7 @@ import bes.mobile.personaltasks.databinding.ActivityTaskFormBinding
 import bes.mobile.personaltasks.model.Constant.EXTRA_TASK
 import bes.mobile.personaltasks.model.Constant.EXTRA_VIEW_TASK
 import bes.mobile.personaltasks.model.Task
+import bes.mobile.personaltasks.model.TaskPriority
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -67,8 +68,11 @@ class TaskFormActivity: AppCompatActivity() {
 
     // Preenche os campos da interface com os dados da tarefa recebida
     private fun prepareView(receivedTask: Task?) {
+
         if (receivedTask == null) {
             with(atfb) {
+                priorityPick.setSelection(2);
+
                 editState.visibility = View.GONE
                 editState.isEnabled = false
             }
@@ -82,6 +86,7 @@ class TaskFormActivity: AppCompatActivity() {
                 editDescription.setText(it.description)
                 textSelectedDate.text = formatDate(it.dueDate)
                 editState.isChecked = it.done
+                priorityPick.setSelection(priorityToInt(it.priority))
 
                 // Verifica se a tarefa está sendo apenas visualizada
                 val viewContact = intent.getBooleanExtra(EXTRA_VIEW_TASK, false)
@@ -127,7 +132,7 @@ class TaskFormActivity: AppCompatActivity() {
                     editTitle.text.toString(),
                     editDescription.text.toString(),
                     parseDate(textSelectedDate.text.toString()) ?: Date(),
-                    editState.isChecked
+                    editState.isChecked,
                 ).let { task ->
                     // Retorna a task como resultado para a Activity anterior
                     Intent().apply {
@@ -187,5 +192,17 @@ class TaskFormActivity: AppCompatActivity() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun priorityToInt(priority: TaskPriority): Int {
+        if (priority == TaskPriority.HIGH) {
+            return 3
+        }
+
+        if (priority == TaskPriority.LOW) {
+            return 1
+        }
+
+        return 2;
     }
 }
